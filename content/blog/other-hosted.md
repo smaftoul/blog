@@ -12,10 +12,10 @@ For now, I have:
 * 🌍 a domain, registrar is eu.org, free, no credit card
 * 📋 a DNS zone (cloudflare)
 * 📥 a catch-all MX (cloudflare)
-*  a code repository (github)
+* <i class="nf"> </i> a code repository (github)
 * ⚡some CI (github actions)
-* 󱁢 an OpenTofu setup and a terraform state storage (Hashicorp Cloud Platform)
-* 🏃♂️this static blog (eleventy, cloudflare workers)
+* <i class="nf">󱁢</i> an OpenTofu setup and a terraform state storage (Hashicorp Cloud Platform)
+* 🏃 this static blog (eleventy, cloudflare workers)
 
 There are some pre-requisites, not exhaustively listed here, but easy to figure out, like accounts for registrar, cloudflare, github, hashicorp cloud platform.
 
