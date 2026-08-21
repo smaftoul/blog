@@ -18,6 +18,24 @@ const {
 
 const pageTitle = title ? `${title} — ${config.title}` : config.title;
 const currentPath = Astro.url.pathname;
+const navEmojis: Record<string, string> = {
+  blog: "✍️",
+  about: "👤",
+  now: "⏱️",
+  uses: "🧰",
+  projects: "🛠️",
+  contributions: "🌍",
+  links: "🔗",
+  inaturalist: "🦉",
+  contact: "✉️",
+};
+
+const socialEmojis: Record<string, string> = {
+  github: "🐙",
+  mastodon: "🐘",
+  linkedin: "💼",
+  spotify: "🎵",
+};
 ---
 
 <!doctype html>
@@ -112,6 +130,7 @@ const currentPath = Astro.url.pathname;
     <header class="brume-header" data-pagefind-ignore>
       <div class="brume-header-inner">
         <a href="/" class="brume-logo" aria-label="Home">
+          <span class="brume-logo-mark" aria-hidden="true">🌫️</span>
           <span class="brume-logo-bracket">[</span>{config.title}<span class="brume-logo-bracket">]</span>
         </a>
 
@@ -124,6 +143,7 @@ const currentPath = Astro.url.pathname;
                   class:list={["brume-nav-link", { active: currentPath.startsWith(item.href) }]}
                   aria-current={currentPath.startsWith(item.href) ? "page" : undefined}
                 >
+                  <span class="brume-nav-emoji" aria-hidden="true">{navEmojis[item.label] ?? "•"}</span>
                   {item.label}
                 </a>
               </li>
@@ -175,6 +195,7 @@ const currentPath = Astro.url.pathname;
           {config.socials.map((s) => (
             <li>
               <a href={s.url} rel="me noopener noreferrer" target="_blank" aria-label={s.label}>
+                <span class="brume-social-emoji" aria-hidden="true">{socialEmojis[s.icon] ?? "•"}</span>
                 {s.label}
               </a>
             </li>
@@ -381,8 +402,12 @@ const currentPath = Astro.url.pathname;
     color: var(--text);
     flex-shrink: 0;
     letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
   }
   .brume-logo:hover { color: var(--accent); }
+  .brume-logo-mark { font-size: 0.95rem; }
   .brume-logo-bracket { color: var(--accent); opacity: 0.7; }
 
   .brume-nav {
@@ -401,7 +426,11 @@ const currentPath = Astro.url.pathname;
     padding: 0.15rem 0;
     border-bottom: 1px solid transparent;
     transition: color 0.15s, border-color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
   }
+  .brume-nav-emoji { font-size: 0.7rem; opacity: 0.75; }
   .brume-nav-link:hover,
   .brume-nav-link.active {
     color: var(--accent);
@@ -616,7 +645,11 @@ const currentPath = Astro.url.pathname;
     font-family: var(--font-mono);
     font-size: 0.75rem;
     color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
   }
+  .brume-social-emoji { font-size: 0.72rem; opacity: 0.8; }
   .brume-footer-socials a:hover { color: var(--accent); }
 
   @keyframes brume-fade-out {
