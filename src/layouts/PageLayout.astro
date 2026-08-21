@@ -1,0 +1,70 @@
+---
+import Base from "./Base.astro";
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <article class="brume-page">
+    <h1 class="brume-page-title">
+      <span class="brume-prompt">~/</span>{title.toLowerCase()}
+    </h1>
+    <div class="brume-page-body">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .brume-page { max-width: 48rem; }
+
+  .brume-page-title {
+    font-family: var(--font-mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .brume-prompt { color: var(--accent); margin-right: 0.1rem; }
+
+  .brume-page-body {
+    color: var(--text);
+    line-height: 1.75;
+  }
+  .brume-page-body :global(h2) {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .brume-page-body :global(p) { margin-bottom: 1rem; }
+  .brume-page-body :global(a) { color: var(--link); }
+  .brume-page-body :global(a:hover) { color: var(--link-hover); }
+  .brume-page-body :global(ul), .brume-page-body :global(ol) {
+    margin: 0 0 1rem 1.5rem;
+  }
+  .brume-page-body :global(li) { margin-bottom: 0.3rem; }
+  .brume-page-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.3em;
+    color: var(--accent);
+  }
+  .brume-page-body :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+</style>

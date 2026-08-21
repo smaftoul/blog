@@ -1,0 +1,160 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="iNaturalist observations" description="My latest nature observations from iNaturalist.">
+  <div class="brume-inaturalist">
+    <h1 class="brume-page-title">
+      <span class="brume-prompt">~/</span>inaturalist
+    </h1>
+    <p class="brume-inaturalist-sub">
+      My latest observations on <a href="https://www.inaturalist.org/people/samuel44461" target="_blank" rel="noopener">iNaturalist</a>.
+    </p>
+
+    <div id="obs-grid" class="brume-obs-grid" aria-live="polite" aria-label="Observations">
+      <p id="obs-loading" class="brume-obs-status">Loading observations…</p>
+    </div>
+  </div>
+</Base>
+
+<script>
+  async function loadObservations() {
+    const grid = document.getElementById("obs-grid");
+    const loading = document.getElementById("obs-loading");
+    if (!grid) return;
+
+    try {
+      const res = await fetch(
+        "https://api.inaturalist.org/v1/observations?user_login=samuel44461&per_page=24&order_by=observed_on&order=desc"
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const observations: any[] = data.results ?? [];
+
+      loading?.remove();
+
+      if (observations.length === 0) {
+        grid.innerHTML = '<p class="brume-obs-status">No observations found.</p>';
+        return;
+      }
+
+      for (const obs of observations) {
+        const photo = obs.observation_photos?.[0]?.photo;
+        const taxon = obs.taxon?.preferred_common_name ?? obs.taxon?.name ?? "Unknown species";
+        const sciName = obs.taxon?.name;
+        const date = obs.observed_on_string ?? obs.observed_on ?? "";
+        const place = obs.place_guess ?? "";
+        const url = `https://www.inaturalist.org/observations/${obs.id}`;
+
+        const card = document.createElement("a");
+        card.href = url;
+        card.target = "_blank";
+        card.rel = "noopener noreferrer";
+        card.className = "brume-obs-card";
+        card.innerHTML = `
+          ${photo ? `<img src="${photo.url?.replace("square", "small")}" alt="${taxon}" loading="lazy" class="brume-obs-img" />` : '<div class="brume-obs-no-photo">No photo</div>'}
+          <div class="brume-obs-info">
+            <span class="brume-obs-taxon">${taxon}</span>
+            ${sciName ? `<span class="brume-obs-sci">${sciName}</span>` : ""}
+            <span class="brume-obs-meta">${[date, place].filter(Boolean).join(" · ")}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+    } catch (err) {
+      console.error("iNaturalist fetch error:", err);
+      if (loading) loading.textContent = "Could not load observations. Try again later.";
+    }
+  }
+
+  loadObservations();
+</script>
+
+<style>
+  .brume-inaturalist { max-width: 60rem; }
+
+  .brume-page-title {
+    font-family: var(--font-mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .brume-prompt { color: var(--accent); }
+
+  .brume-inaturalist-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .brume-inaturalist-sub a { color: var(--link); }
+  .brume-inaturalist-sub a:hover { color: var(--link-hover); }
+
+  .brume-obs-status {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .brume-obs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .brume-obs-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    transition: border-color 0.15s;
+    text-decoration: none;
+  }
+  .brume-obs-card:hover { border-color: var(--accent); }
+
+  .brume-obs-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+  }
+  .brume-obs-no-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface2);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .brume-obs-info {
+    padding: 0.5rem 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .brume-obs-taxon {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .brume-obs-sci {
+    font-size: 0.7rem;
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .brume-obs-meta {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+  }
+</style>

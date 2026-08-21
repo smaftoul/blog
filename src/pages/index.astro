@@ -1,32 +1,167 @@
 ---
 import Base from "../layouts/Base.astro";
+import config from "../config";
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("blog");
+const featuredPosts = allPosts
+  .filter((p) => p.data.featured && (import.meta.env.PROD ? !p.data.draft : true))
+  .sort((a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime())
+  .slice(0, 5);
+
+const recentPosts = allPosts
+  .filter((p) => !p.data.featured && (import.meta.env.PROD ? !p.data.draft : true))
+  .sort((a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime())
+  .slice(0, 3);
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" });
+}
 ---
 
-<Base title="Home">
-  <section>
-    <h1 class="brume-home-title">
-      <span class="brume-prompt">~$</span> welcome
-    </h1>
-    <p class="brume-home-sub">Platform engineering. Infrastructure. Things that matter.</p>
-  </section>
+<Base>
+  <div class="brume-home">
+    <section class="brume-hero">
+      <div class="brume-hero-prompt">
+        <span class="brume-cursor">▋</span>
+        <span class="brume-hero-title">{config.title}</span>
+      </div>
+      <p class="brume-hero-bio">{config.authorBio}</p>
+      <ul class="brume-hero-socials">
+        {config.socials.map((s) => (
+          <li>
+            <a href={s.url} rel="me noopener noreferrer" target="_blank">
+              {s.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {featuredPosts.length > 0 && (
+      <section class="brume-section">
+        <h2 class="brume-section-title">
+          <span class="brume-prompt-sm">$</span> featured
+        </h2>
+        <ul class="brume-post-list">
+          {featuredPosts.map((post) => (
+            <li class="brume-post-row">
+              <time class="brume-post-date">{formatDate(post.data.pubDatetime)}</time>
+              <a href={`/blog/${post.id}`} class="brume-post-link">{post.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {recentPosts.length > 0 && (
+      <section class="brume-section">
+        <h2 class="brume-section-title">
+          <span class="brume-prompt-sm">$</span> recent
+        </h2>
+        <ul class="brume-post-list">
+          {recentPosts.map((post) => (
+            <li class="brume-post-row">
+              <time class="brume-post-date">{formatDate(post.data.pubDatetime)}</time>
+              <a href={`/blog/${post.id}`} class="brume-post-link">{post.data.title}</a>
+            </li>
+          ))}
+        </ul>
+        <a href="/blog" class="brume-all-link">all posts →</a>
+      </section>
+    )}
+  </div>
 </Base>
 
 <style>
-  .brume-home-title {
+  .brume-home { max-width: 48rem; }
+
+  .brume-hero {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brume-hero-prompt {
     font-family: var(--font-mono);
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
-  .brume-prompt {
+  .brume-cursor {
     color: var(--accent);
-    margin-right: 0.5rem;
-    opacity: 0.8;
+    animation: blink 1.2s step-end infinite;
   }
-  .brume-home-sub {
-    font-size: 1rem;
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .brume-hero-title { color: var(--text); }
+
+  .brume-hero-bio {
+    font-size: 0.95rem;
     color: var(--text-muted);
-    margin-top: 0.5rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    max-width: 38rem;
   }
+
+  .brume-hero-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    list-style: none;
+  }
+  .brume-hero-socials a {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .brume-hero-socials a:hover { color: var(--accent); }
+
+  .brume-section { margin-bottom: 2.5rem; }
+
+  .brume-section-title {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  .brume-prompt-sm { color: var(--accent); margin-right: 0.4rem; }
+
+  .brume-post-list { list-style: none; }
+  .brume-post-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .brume-post-date {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    min-width: 7.5rem;
+  }
+  .brume-post-link {
+    font-size: 0.9rem;
+    color: var(--text);
+    transition: color 0.15s;
+  }
+  .brume-post-link:hover { color: var(--accent); }
+
+  .brume-all-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .brume-all-link:hover { color: var(--accent); }
 </style>
