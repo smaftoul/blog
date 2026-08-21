@@ -44,7 +44,9 @@ function formatDate(d: Date): string {
             {post.data.tags.length > 0 && (
               <ul class="brume-post-card-tags" aria-label="tags">
                 {post.data.tags.map((tag) => (
-                  <li><span class="brume-tag-pill">{tag}</span></li>
+                  <li>
+                    <a href={`/blog/tags/${tag}`} class="brume-tag-pill">{tag}</a>
+                  </li>
                 ))}
               </ul>
             )}
@@ -145,5 +147,10 @@ function formatDate(d: Date): string {
     border: 1px solid var(--border);
     border-radius: 3px;
     color: var(--text-muted);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .brume-tag-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 </style>
