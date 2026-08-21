@@ -47,6 +47,11 @@ const websiteSchema = {
         <span class="brume-cursor">▋</span>
         <span class="brume-hero-title">{config.title}</span>
       </div>
+      <p class="brume-hero-etymology">
+        <span class="brume-comment">#</span>{" "}
+        <em>/bʁym/</em> &mdash; French for <em>mist</em> or <em>fog</em>.
+        Cloud infrastructure, ambient music, foggy mornings.
+      </p>
       <p class="brume-hero-bio">{config.authorBio}</p>
       <ul class="brume-hero-socials">
         {config.socials.map((s) => (
@@ -121,6 +126,15 @@ const websiteSchema = {
     50% { opacity: 0; }
   }
   .brume-hero-title { color: var(--text); }
+
+  .brume-hero-etymology {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    opacity: 0.75;
+  }
+  .brume-comment { color: var(--accent); margin-right: 0.3rem; opacity: 0.6; }
 
   .brume-hero-bio {
     font-size: 0.95rem;
