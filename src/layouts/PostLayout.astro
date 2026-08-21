@@ -1,6 +1,7 @@
 ---
 import Base from "./Base.astro";
 import config from "../config";
+import { getWebmentions, filterByType } from "../lib/webmentions";
 
 export interface Props {
   title: string;
@@ -36,6 +37,17 @@ const structuredData = {
   dateModified: (modDatetime ?? pubDatetime).toISOString(),
   author: { "@type": "Person", name: displayAuthor, url: config.url },
 };
+
+// Fetch webmentions at build time — graceful fallback if service unreachable
+const wmFeed = config.features.webmentions
+  ? await getWebmentions(canonicalURL)
+  : { type: "feed" as const, name: "", children: [] };
+const likes    = filterByType(wmFeed, "like-of");
+const reposts  = filterByType(wmFeed, "repost-of");
+const replies  = filterByType(wmFeed, "in-reply-to");
+const hasWm    = likes.length + reposts.length + replies.length > 0;
+
+const mastodonSearchUrl = `https://hachyderm.io/search?q=${encodeURIComponent(canonicalURL)}&type=statuses`;
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-GB", {
@@ -88,6 +100,44 @@ function formatDate(d: Date): string {
 
     <div class="brume-post-body">
       <slot />
+    </div>
+
+    <!-- Webmentions — only rendered when flag is enabled and mentions exist -->
+    {hasWm && (
+      <section class="brume-wm" aria-label="Webmentions">
+        <h2 class="brume-wm-title">Webmentions</h2>
+        <div class="brume-wm-counts">
+          {likes.length > 0 && (
+            <span>♥ {likes.length} like{likes.length !== 1 ? "s" : ""}</span>
+          )}
+          {reposts.length > 0 && (
+            <span>↺ {reposts.length} repost{reposts.length !== 1 ? "s" : ""}</span>
+          )}
+        </div>
+        {replies.map((r) => (
+          <div class="brume-wm-reply">
+            <a href={r.url} class="brume-wm-author" target="_blank" rel="noopener noreferrer">
+              {r.author?.photo && (
+                <img src={r.author.photo} alt="" class="brume-wm-avatar" loading="lazy" width="24" height="24" />
+              )}
+              <span>{r.author?.name ?? r.url}</span>
+            </a>
+            {r.content?.text && <p class="brume-wm-text">{r.content.text}</p>}
+            {r.published && (
+              <time class="brume-wm-date" datetime={r.published}>
+                {new Date(r.published).toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" })}
+              </time>
+            )}
+          </div>
+        ))}
+      </section>
+    )}
+
+    <!-- Discuss on Mastodon -->
+    <div class="brume-discuss">
+      <a href={mastodonSearchUrl} target="_blank" rel="noopener noreferrer" class="brume-discuss-link">
+        Discuss on Mastodon →
+      </a>
     </div>
   </article>
 </Base>
@@ -242,4 +292,71 @@ function formatDate(d: Date): string {
     font-size: 0.8rem;
     color: var(--text-muted);
   }
+
+  /* ─── Webmentions ─── */
+  .brume-wm {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .brume-wm-title {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+  }
+  .brume-wm-counts {
+    display: flex;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .brume-wm-reply {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .brume-wm-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .brume-wm-author:hover { color: var(--accent); }
+  .brume-wm-avatar {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .brume-wm-text {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin: 0.3rem 0;
+    line-height: 1.5;
+  }
+  .brume-wm-date {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  /* ─── Discuss on Mastodon ─── */
+  .brume-discuss {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .brume-discuss-link {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .brume-discuss-link:hover { color: var(--accent); }
 </style>
