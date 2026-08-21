@@ -1,0 +1,149 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+const allPosts = await getCollection("blog");
+const posts = allPosts
+  .filter((p) => import.meta.env.PROD ? !p.data.draft : true)
+  .sort((a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime());
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+---
+
+<Base title="Blog" description="All posts on brume.">
+  <div class="brume-blog-header">
+    <h1 class="brume-blog-title">
+      <span class="brume-prompt">~/blog</span>
+    </h1>
+    <p class="brume-blog-sub">{posts.length} post{posts.length !== 1 ? "s" : ""}</p>
+  </div>
+
+  {posts.length === 0 ? (
+    <p class="brume-empty">No posts yet.</p>
+  ) : (
+    <ul class="brume-post-list">
+      {posts.map((post) => (
+        <li class:list={["brume-post-card", { featured: post.data.featured }]}>
+          {post.data.featured && (
+            <span class="brume-featured-badge" aria-label="Featured">★</span>
+          )}
+          <a href={`/blog/${post.id}`} class="brume-post-card-link">
+            <h2 class="brume-post-card-title">{post.data.title}</h2>
+          </a>
+          <p class="brume-post-card-desc">{post.data.description}</p>
+          <div class="brume-post-card-meta">
+            <time datetime={post.data.pubDatetime.toISOString()}>
+              {formatDate(post.data.pubDatetime)}
+            </time>
+            {post.data.tags.length > 0 && (
+              <ul class="brume-post-card-tags" aria-label="tags">
+                {post.data.tags.map((tag) => (
+                  <li><span class="brume-tag-pill">{tag}</span></li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>
+
+<style>
+  .brume-blog-header { margin-bottom: 2rem; }
+
+  .brume-blog-title {
+    font-family: var(--font-mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .brume-prompt { color: var(--accent); }
+
+  .brume-blog-sub {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .brume-empty {
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .brume-post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    list-style: none;
+  }
+
+  .brume-post-card {
+    position: relative;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .brume-post-card:first-child { border-top: 1px solid var(--border); }
+  .brume-post-card.featured { border-left: 2px solid var(--accent); padding-left: 1rem; }
+
+  .brume-featured-badge {
+    position: absolute;
+    top: 1.25rem;
+    right: 0;
+    color: var(--accent);
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+
+  .brume-post-card-link { display: block; }
+  .brume-post-card-title {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+    transition: color 0.15s;
+  }
+  .brume-post-card-link:hover .brume-post-card-title { color: var(--accent); }
+
+  .brume-post-card-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .brume-post-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .brume-post-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    list-style: none;
+  }
+
+  .brume-tag-pill {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-muted);
+  }
+</style>
