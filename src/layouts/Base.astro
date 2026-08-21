@@ -283,9 +283,21 @@ const socialEmojis: Record<string, string> = {
 
         var items = await Promise.all(search.results.slice(0, 8).map(function(r) { return r.data(); }));
         els.results.innerHTML = items.map(function(item) {
+          var title = item.title || item.url;
+          // Clean up title: extract just the path from URLs
+          if (title.startsWith('~/')) {
+            title = title.substring(2);
+          }
+          // Truncate title to first line if multiline
+          title = title.split('\n')[0].substring(0, 60);
+          // Truncate excerpt to 150 chars
+          var excerpt = (item.excerpt || "").substring(0, 150);
+          if (item.excerpt && item.excerpt.length > 150) {
+            excerpt += "…";
+          }
           return '<a href="' + item.url + '" class="brume-search-result">'
-          + '<span class="brume-search-result-title">' + (item.meta && item.meta.title ? item.meta.title : item.url) + '</span>'
-          + '<span class="brume-search-result-excerpt">' + (item.excerpt || "") + '</span>'
+          + '<span class="brume-search-result-title">' + title + '</span>'
+          + '<span class="brume-search-result-excerpt">' + excerpt + '</span>'
           + '</a>';
         }).join("");
       }
@@ -596,39 +608,63 @@ const socialEmojis: Record<string, string> = {
   .brume-search-results {
     max-height: 60vh;
     overflow-y: auto;
-    padding: 0.5rem 0;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
   .brume-search-result {
-    display: block;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    margin: 0;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-surface2);
+    transition: all 0.15s;
+    text-decoration: none;
   }
-  .brume-search-result:hover { background: var(--bg-surface2); }
-  .brume-search-result:last-child { border-bottom: none; }
+  .brume-search-result:hover {
+    background: var(--bg-surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+  }
 
   .brume-search-result-title {
     display: block;
     font-family: var(--font-mono);
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .brume-search-result:hover .brume-search-result-title { color: var(--accent); }
+  .brume-search-result:hover .brume-search-result-title {
+    color: var(--accent);
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+  }
 
   .brume-search-result-excerpt {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     line-height: 1.5;
+    margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   /* Pagefind highlights the matching term */
   .brume-search-result-excerpt :global(mark) {
-    background: none;
+    background: rgba(0, 229, 255, 0.2);
     color: var(--accent);
     font-weight: 600;
+    padding: 0.1em 0.25em;
+    border-radius: 2px;
   }
 
   .brume-search-msg {
