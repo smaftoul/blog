@@ -205,12 +205,18 @@ const socialEmojis: Record<string, string> = {
     </footer>
 
     <!-- Theme toggle script -->
-    <script>
-      const btn = document.getElementById("theme-toggle");
-      btn?.addEventListener("click", () => {
-        const isDark = document.documentElement.classList.toggle("dark");
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-      });
+    <script is:inline>
+      if (!window.__brumeThemeToggleBound) {
+        window.__brumeThemeToggleBound = true;
+        document.addEventListener("click", function (event) {
+          var target = event.target;
+          if (!(target instanceof Element)) return;
+          var btn = target.closest("#theme-toggle");
+          if (!btn) return;
+          var isDark = document.documentElement.classList.toggle("dark");
+          localStorage.setItem("theme", isDark ? "dark" : "light");
+        });
+      }
     </script>
 
     <!-- Pagefind search modal script — is:inline so Vite never tries to resolve /pagefind/pagefind.js -->
