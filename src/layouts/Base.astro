@@ -51,6 +51,16 @@ const currentPath = Astro.url.pathname;
       })();
     </script>
 
+    <!-- GoatCounter analytics — only loaded when feature flag is enabled -->
+    {config.features.goatCounter && (
+      <script
+        is:inline
+        data-goatcounter="https://maftoul.goatcounter.com/count"
+        async
+        src="//gc.zgo.at/count.js"
+      ></script>
+    )}
+
     <!-- Extra per-page head content (JSON-LD, alternate links, etc.) -->
     <slot name="head" />
   </head>
