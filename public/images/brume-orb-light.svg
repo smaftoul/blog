@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc">
+  <title id="title">Brume decorative fog illustration, light variant</title>
+  <desc id="desc">A soft light fog gradient with subtle blue and green glows.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3f6fb" />
+      <stop offset="50%" stop-color="#e8edf4" />
+      <stop offset="100%" stop-color="#dde5ef" />
+    </linearGradient>
+    <radialGradient id="mistA" cx="30%" cy="40%" r="45%">
+      <stop offset="0%" stop-color="#0969da" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#0969da" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="mistB" cx="75%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#1a7f37" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#1a7f37" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="360" fill="url(#bg)" />
+  <circle cx="360" cy="170" r="190" fill="url(#mistA)" />
+  <circle cx="980" cy="160" r="230" fill="url(#mistB)" />
+  <ellipse cx="700" cy="250" rx="440" ry="80" fill="#ffffff" opacity="0.25" />
+</svg>
