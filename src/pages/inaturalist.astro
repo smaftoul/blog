@@ -173,6 +173,14 @@ import Base from "../layouts/Base.astro";
   }
 
   loadObservations();
+
+  // Re-load observations when navigating back to this page via ClientRouter
+  document.addEventListener("astro:after-swap", () => {
+    const grid = document.getElementById("obs-grid");
+    if (grid) {
+      loadObservations();
+    }
+  });
 </script>
 
 <style>
