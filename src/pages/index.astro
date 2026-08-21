@@ -17,9 +17,30 @@ const recentPosts = allPosts
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" });
 }
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: config.author,
+  url: config.url,
+  jobTitle: "SRE / Platform Engineer",
+  sameAs: config.socials.map((s) => s.url).filter((u) => u.startsWith("https://")),
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: config.title,
+  url: config.url,
+  description: config.description,
+};
 ---
 
 <Base>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(websiteSchema)} />
+  </Fragment>
   <div class="brume-home">
     <section class="brume-hero">
       <div class="brume-hero-prompt">

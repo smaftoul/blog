@@ -1,5 +1,6 @@
 ---
 import Base from "./Base.astro";
+import config from "../config";
 
 export interface Props {
   title: string;
@@ -8,6 +9,7 @@ export interface Props {
   modDatetime?: Date;
   tags?: string[];
   author?: string;
+  canonicalURL?: string;
 }
 
 const {
@@ -17,11 +19,23 @@ const {
   modDatetime,
   tags = [],
   author,
+  canonicalURL = new URL(Astro.url.pathname, config.url).href,
 } = Astro.props;
 
-import config from "../config";
-
 const displayAuthor = author ?? config.author;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  url: canonicalURL,
+  mainEntityOfPage: canonicalURL,
+  keywords: tags.join(", ") || undefined,
+  datePublished: pubDatetime.toISOString(),
+  dateModified: (modDatetime ?? pubDatetime).toISOString(),
+  author: { "@type": "Person", name: displayAuthor, url: config.url },
+};
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-GB", {
@@ -32,8 +46,10 @@ function formatDate(d: Date): string {
 }
 ---
 
-<Base title={title} description={description} ogType="article">
-  <slot name="head" slot="head" />
+<Base title={title} description={description} ogType="article" canonicalURL={canonicalURL}>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+  </Fragment>
 
   <article class="brume-post">
     <header class="brume-post-header">
@@ -73,9 +89,6 @@ function formatDate(d: Date): string {
     <div class="brume-post-body">
       <slot />
     </div>
-
-    <!-- Per-page structured data placeholder (JSON-LD added in Phase 7) -->
-    <slot name="structured-data" />
   </article>
 </Base>
 
