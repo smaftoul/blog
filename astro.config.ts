@@ -5,6 +5,7 @@ import unocss from "@unocss/astro";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import type { AstroIntegration } from "astro";
+import { unified } from "@astrojs/markdown-remark";
 import { remarkMermaid } from "./src/utils/remarkMermaid";
 
 /**
@@ -50,7 +51,7 @@ export default defineConfig({
   site: "https://maftoul.eu.org",
   output: "static",
   markdown: {
-    remarkPlugins: [remarkMermaid],
+    processor: unified({ remarkPlugins: [remarkMermaid] }),
   },
   integrations: [unocss({ injectReset: true }), sitemap(), mdx(), cloudflareHeaders()],
 });

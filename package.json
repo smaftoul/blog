@@ -13,6 +13,7 @@
     "check": "astro check"
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^7.2.4",
     "@astrojs/mdx": "^7.0.0",
     "@astrojs/sitemap": "^3.4.1",
     "@unocss/astro": "^66.3.3",
