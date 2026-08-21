@@ -23,5 +23,8 @@ pnpm-debug.log*
 # nix-direnv
 .direnv/
 
+# track .envrc even if globally ignored
+!.envrc
+
 # jetbrains setting folder
 .idea/

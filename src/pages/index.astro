@@ -1,17 +1,32 @@
 ---
-
+import Base from "../layouts/Base.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="Home">
+  <section>
+    <h1 class="brume-home-title">
+      <span class="brume-prompt">~$</span> welcome
+    </h1>
+    <p class="brume-home-sub">Platform engineering. Infrastructure. Things that matter.</p>
+  </section>
+</Base>
+
+<style>
+  .brume-home-title {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .brume-prompt {
+    color: var(--accent);
+    margin-right: 0.5rem;
+    opacity: 0.8;
+  }
+  .brume-home-sub {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+  }
+</style>
