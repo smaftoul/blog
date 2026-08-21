@@ -1,0 +1,25 @@
+name: Scheduled rebuild
+
+# Triggers a Cloudflare Pages rebuild daily to pick up new webmentions.
+# Note: regular deployments are automatic — Cloudflare Pages auto-deploys
+#       on every push to main via its GitHub source integration. This workflow
+#       is only needed for the scheduled webmention refresh.
+# Only runs when SCHEDULED_REBUILD_ENABLED repository variable is "true".
+# Required secret: CLOUDFLARE_DEPLOY_HOOK (Pages project → Settings → Builds & deployments)
+
+on:
+  schedule:
+    - cron: "23 5 * * *"  # 05:23 UTC daily
+  workflow_dispatch:        # allow manual trigger
+
+jobs:
+  rebuild:
+    name: Trigger Cloudflare Pages rebuild
+    runs-on: ubuntu-latest
+    if: vars.SCHEDULED_REBUILD_ENABLED == 'true'
+
+    steps:
+      - name: Trigger deploy hook
+        run: |
+          curl -s -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}"
+          echo "Rebuild triggered at $(date -u)"
