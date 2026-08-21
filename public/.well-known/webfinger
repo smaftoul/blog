@@ -1,0 +1,23 @@
+{
+  "subject": "acct:maftoul.eu.org@maftoul.eu.org",
+  "aliases": [
+    "https://maftoul.eu.org/",
+    "https://fed.brid.gy/maftoul.eu.org"
+  ],
+  "links": [
+    {
+      "rel": "http://webfinger.net/rel/profile-page",
+      "type": "text/html",
+      "href": "https://maftoul.eu.org/"
+    },
+    {
+      "rel": "self",
+      "type": "application/activity+json",
+      "href": "https://fed.brid.gy/maftoul.eu.org"
+    },
+    {
+      "rel": "http://ostatus.org/schema/1.0/subscribe",
+      "template": "https://fed.brid.gy/r/{uri}"
+    }
+  ]
+}
