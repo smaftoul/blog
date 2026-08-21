@@ -5,6 +5,7 @@ import unocss from "@unocss/astro";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import type { AstroIntegration } from "astro";
+import { remarkMermaid } from "./src/utils/remarkMermaid";
 
 /**
  * Cloudflare Pages _headers integration.
@@ -24,7 +25,7 @@ function cloudflareHeaders(): AstroIntegration {
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://gc.zgo.at https://api.inaturalist.org; worker-src 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' gc.zgo.at cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://gc.zgo.at https://api.inaturalist.org; worker-src 'self'; frame-src https://calendar.google.com; frame-ancestors 'none'
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
@@ -48,5 +49,8 @@ function cloudflareHeaders(): AstroIntegration {
 export default defineConfig({
   site: "https://maftoul.eu.org",
   output: "static",
+  markdown: {
+    remarkPlugins: [remarkMermaid],
+  },
   integrations: [unocss({ injectReset: true }), sitemap(), mdx(), cloudflareHeaders()],
 });

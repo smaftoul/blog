@@ -5,16 +5,17 @@
     "": {
       "name": "brume",
       "dependencies": {
-        "@astrojs/check": "0.9.10",
         "@astrojs/mdx": "^7.0.0",
         "@astrojs/sitemap": "^3.4.1",
         "@unocss/astro": "^66.3.3",
         "astro": "^7.2.4",
-        "typescript": "^5.8.0",
+        "unist-util-visit": "^5.1.0",
         "unocss": "^66.3.3",
       },
       "devDependencies": {
+        "@astrojs/check": "^0.9.10",
         "@unocss/preset-typography": "^66.3.3",
+        "typescript": "^5.9.3",
       },
     },
   },

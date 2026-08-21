@@ -61,6 +61,25 @@ const currentPath = Astro.url.pathname;
       ></script>
     )}
 
+    <!-- Mermaid: lazy-load from CDN only on pages that have diagrams -->
+    <script>
+      async function renderMermaid() {
+        const els = Array.from(
+          document.querySelectorAll<HTMLElement>("pre.mermaid:not([data-processed])")
+        );
+        if (!els.length) return;
+        const { default: mermaid } = await import(
+          // @ts-expect-error — mermaid has no bundled type declarations for CDN import
+          "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
+        );
+        const dark = document.documentElement.classList.contains("dark");
+        mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+        await mermaid.run({ nodes: els });
+      }
+      // Runs on every Astro page navigation (including first load via astro:page-load)
+      document.addEventListener("astro:page-load", renderMermaid);
+    </script>
+
     <!-- Extra per-page head content (JSON-LD, alternate links, etc.) -->
     <slot name="head" />
   </head>
