@@ -1,5 +1,6 @@
 ---
 import config from "../config";
+import { ClientRouter } from "astro:transitions";
 
 export interface Props {
   title?: string;
@@ -85,12 +86,21 @@ const currentPath = Astro.url.pathname;
         mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
         await mermaid.run({ nodes: els });
       }
-      // Runs on every Astro page navigation (including first load via astro:page-load)
+      // For View Transitions navigations (subsequent page loads)
       document.addEventListener("astro:page-load", renderMermaid);
+
+      // For initial page load: astro:page-load may have already fired by the time
+      // this module script runs (scripts are deferred). Use readyState as the guard.
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderMermaid);
+      } else {
+        renderMermaid();
+      }
     </script>
 
     <!-- Extra per-page head content (JSON-LD, alternate links, etc.) -->
     <slot name="head" />
+    <ClientRouter />
   </head>
 
   <body class="brume-body">
@@ -569,6 +579,7 @@ const currentPath = Astro.url.pathname;
     padding: 2.5rem 1.5rem;
     position: relative;
     z-index: 1;
+    view-transition-name: brume-main;
   }
 
   /* ─── Footer ─── */
@@ -607,6 +618,49 @@ const currentPath = Astro.url.pathname;
     color: var(--text-muted);
   }
   .brume-footer-socials a:hover { color: var(--accent); }
+
+  @keyframes brume-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes brume-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes brume-slide-out {
+    from { opacity: 1; transform: translateY(0); filter: blur(0); }
+    to { opacity: 0; transform: translateY(-8px); filter: blur(1px); }
+  }
+
+  @keyframes brume-slide-in {
+    from { opacity: 0; transform: translateY(8px); filter: blur(1px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  :global(::view-transition-old(root)) {
+    animation: brume-fade-out 120ms ease-out both;
+  }
+
+  :global(::view-transition-new(root)) {
+    animation: brume-fade-in 160ms ease-out both;
+  }
+
+  :global(::view-transition-old(brume-main)) {
+    animation: brume-slide-out 180ms ease-in both;
+  }
+
+  :global(::view-transition-new(brume-main)) {
+    animation: brume-slide-in 220ms ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(::view-transition-old(root)),
+    :global(::view-transition-new(root)) {
+      animation: none;
+    }
+  }
 
   /* ─── Responsive ─── */
   @media (max-width: 640px) {
