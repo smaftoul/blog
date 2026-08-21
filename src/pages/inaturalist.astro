@@ -45,6 +45,8 @@ import Base from "../layouts/Base.astro";
         const date = obs.observed_on_string ?? obs.observed_on ?? "";
         const place = obs.place_guess ?? "";
         const url = `https://www.inaturalist.org/observations/${obs.id}`;
+        const sounds: any[] = obs.observation_sounds ?? [];
+        const firstSound = sounds[0]?.sound;
 
         const card = document.createElement("a");
         card.href = url;
@@ -52,35 +54,116 @@ import Base from "../layouts/Base.astro";
         card.rel = "noopener noreferrer";
         card.className = "brume-obs-card";
 
-        const sounds: any[] = obs.observation_sounds ?? [];
-        const firstSound = sounds[0]?.sound;
-
-        let mediaHtml = "";
+        // ── Media area ──────────────────────────────────────────────
         if (photo) {
-          mediaHtml = `<img src="${photo.url?.replace("square", "small")}" alt="${taxon}" loading="lazy" class="brume-obs-img" />`;
+          const img = document.createElement("img");
+          img.src = photo.url?.replace("square", "small") ?? "";
+          img.alt = taxon;
+          img.loading = "lazy";
+          img.className = "brume-obs-img";
+          card.appendChild(img);
+
         } else if (firstSound?.file_url) {
-          // Sound-only observation: show waveform placeholder + inline audio player
-          mediaHtml = `
-            <div class="brume-obs-sound">
-              <div class="brume-obs-waveform" aria-hidden="true">
-                ${Array.from({ length: 20 }, (_, i) => `<span style="height:${8 + Math.sin(i * 1.3) * 6 + Math.cos(i * 0.7) * 4}px"></span>`).join("")}
-              </div>
-              <audio controls preload="none" class="brume-obs-audio" onclick="event.preventDefault(); event.stopPropagation()">
-                <source src="${firstSound.file_url}" type="${firstSound.file_content_type ?? 'audio/mp4'}" />
-              </audio>
-            </div>`;
+          // Custom audio player — fits inside the same aspect-ratio:1 box as photos
+          const soundDiv = document.createElement("div");
+          soundDiv.className = "brume-obs-sound";
+
+          // Waveform (animates while playing)
+          const waveEl = document.createElement("div");
+          waveEl.className = "brume-obs-waveform";
+          waveEl.setAttribute("aria-hidden", "true");
+          for (let i = 0; i < 22; i++) {
+            const bar = document.createElement("span");
+            bar.style.setProperty("--h", `${8 + Math.sin(i * 1.3) * 6 + Math.cos(i * 0.7) * 4}px`);
+            waveEl.appendChild(bar);
+          }
+
+          // Controls row
+          const ctrlRow = document.createElement("div");
+          ctrlRow.className = "brume-obs-ctrl";
+
+          const playBtn = document.createElement("button");
+          playBtn.className = "brume-obs-playbtn";
+          playBtn.setAttribute("aria-label", "Play recording");
+          playBtn.textContent = "▶";
+
+          const progWrap = document.createElement("div");
+          progWrap.className = "brume-obs-prog";
+          const progFill = document.createElement("div");
+          progFill.className = "brume-obs-prog-fill";
+          progWrap.appendChild(progFill);
+
+          const timeEl = document.createElement("span");
+          timeEl.className = "brume-obs-time";
+          timeEl.textContent = "0:00";
+
+          ctrlRow.append(playBtn, progWrap, timeEl);
+          soundDiv.append(waveEl, ctrlRow);
+          card.appendChild(soundDiv);
+
+          // Hidden audio — created but not loaded until play
+          const audio = new Audio();
+          audio.preload = "none";
+          audio.src = firstSound.file_url;
+
+          const fmt = (s: number) =>
+            `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+          playBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            audio.paused ? audio.play() : audio.pause();
+          });
+
+          audio.addEventListener("play", () => {
+            playBtn.textContent = "⏸";
+            playBtn.setAttribute("aria-label", "Pause");
+            waveEl.classList.add("playing");
+          });
+          audio.addEventListener("pause", () => {
+            playBtn.textContent = "▶";
+            playBtn.setAttribute("aria-label", "Play recording");
+            waveEl.classList.remove("playing");
+          });
+          audio.addEventListener("ended", () => {
+            playBtn.textContent = "▶";
+            waveEl.classList.remove("playing");
+            progFill.style.width = "0%";
+            timeEl.textContent = "0:00";
+          });
+          audio.addEventListener("timeupdate", () => {
+            if (audio.duration) {
+              progFill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+            }
+            timeEl.textContent = fmt(audio.currentTime);
+          });
+
+          // Click progress bar to seek
+          progWrap.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const rect = progWrap.getBoundingClientRect();
+            if (audio.duration) {
+              audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+            }
+          });
+
         } else {
-          mediaHtml = `<div class="brume-obs-no-photo">No media</div>`;
+          const noMedia = document.createElement("div");
+          noMedia.className = "brume-obs-no-photo";
+          noMedia.textContent = "No media";
+          card.appendChild(noMedia);
         }
 
-        card.innerHTML = `
-          ${mediaHtml}
-          <div class="brume-obs-info">
-            <span class="brume-obs-taxon">${taxon}</span>
-            ${sciName ? `<span class="brume-obs-sci">${sciName}</span>` : ""}
-            <span class="brume-obs-meta">${[date, place].filter(Boolean).join(" · ")}</span>
-          </div>
+        // ── Info strip ───────────────────────────────────────────────
+        const info = document.createElement("div");
+        info.className = "brume-obs-info";
+        info.innerHTML = `
+          <span class="brume-obs-taxon">${taxon}</span>
+          ${sciName ? `<span class="brume-obs-sci">${sciName}</span>` : ""}
+          <span class="brume-obs-meta">${[date, place].filter(Boolean).join(" · ")}</span>
         `;
+        card.appendChild(info);
         grid.appendChild(card);
       }
     } catch (err) {
@@ -156,43 +239,100 @@ import Base from "../layouts/Base.astro";
     color: var(--text-muted);
   }
 
-  /* Sound-only observations */
+  /* Sound-only observations — custom player */
   .brume-obs-sound {
     width: 100%;
     aspect-ratio: 1;
     background: var(--bg-surface2);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
+    align-items: stretch;
+    overflow: hidden;
   }
 
-  /* Decorative waveform bars */
+  /* Waveform fills the top area, shrinks/grows with the square */
   .brume-obs-waveform {
+    flex: 1;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 2px;
-    height: 30px;
+    padding: 0.5rem;
+    overflow: hidden;
   }
   .brume-obs-waveform span {
     display: block;
     width: 3px;
+    height: var(--h, 8px);
     background: var(--accent);
     border-radius: 2px;
-    opacity: 0.7;
+    opacity: 0.5;
+    transform-origin: center;
+    transition: opacity 0.2s;
+  }
+  /* Animate bars when playing */
+  .brume-obs-waveform.playing span {
+    opacity: 0.9;
+    animation: wave-pulse 0.8s ease-in-out infinite alternate;
+  }
+  .brume-obs-waveform.playing span:nth-child(odd)  { animation-delay: 0s; }
+  .brume-obs-waveform.playing span:nth-child(even) { animation-delay: 0.15s; }
+  @keyframes wave-pulse {
+    from { transform: scaleY(0.6); }
+    to   { transform: scaleY(1.4); }
   }
 
-  /* Audio player — compact and themed */
-  .brume-obs-audio {
-    width: 100%;
-    height: 28px;
-    opacity: 0.85;
-    filter: invert(0);
+  /* Controls row — fixed height at the bottom of the square */
+  .brume-obs-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.5rem;
+    background: rgba(0,0,0,0.25);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
   }
-  html.dark .brume-obs-audio {
-    filter: invert(1) hue-rotate(180deg);
+
+  .brume-obs-playbtn {
+    background: none;
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.6rem;
+    line-height: 1;
+    padding: 0.2rem 0.35rem;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .brume-obs-playbtn:hover { background: var(--accent); color: var(--bg); }
+
+  /* Progress bar */
+  .brume-obs-prog {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .brume-obs-prog-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+  .brume-obs-prog:hover .brume-obs-prog-fill { opacity: 0.8; }
+
+  .brume-obs-time {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
   }
 
   .brume-obs-info {
