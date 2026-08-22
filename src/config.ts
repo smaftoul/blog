@@ -54,6 +54,7 @@ const config: SiteConfig = {
     { label: "uses",        href: "/uses"        },
     { label: "projects",    href: "/projects"    },
     { label: "links",       href: "/links"       },
+    { label: "contributions", href: "/contributions" },
     { label: "inaturalist", href: "/inaturalist" },
     { label: "contact",     href: "/contact"     },
   ],

@@ -1,0 +1,410 @@
+---
+import { getCollection, render } from "astro:content";
+import PageLayout from "../layouts/PageLayout.astro";
+
+// Load contributions markdown content
+const contribPages = await getCollection("pages");
+const contribPage = contribPages.find((p) => p.id === "contributions");
+const { Content } = contribPage ? await render(contribPage) : { Content: null };
+---
+
+<PageLayout
+  title={contribPage?.data.title || "Contributions"}
+  description={contribPage?.data.description || "Public open-source contributions"}
+>
+  {Content && (
+    <p class="contrib-intro">
+      <Content />
+    </p>
+  )}
+
+  <!-- ── OSS contributions ──────────────────────────────────── -->
+  <section class="contrib-section">
+    <h2>Open source</h2>
+
+    <div class="contrib-list">
+
+      <!-- git/git — commit -->
+      <article class="contrib-card contrib-card--top">
+        <div class="contrib-card-header">
+          <a href="https://github.com/git/git/commit/560ae1c164ad040a389ccc47834dce8c15447294"
+             target="_blank" rel="noopener" class="contrib-repo">git/git</a>
+          <span class="contrib-stars">⭐ 62k</span>
+          <span class="contrib-badge contrib-badge--feature">feature</span>
+          <span class="contrib-badge contrib-badge--commit">commit</span>
+          <span class="contrib-year">2018</span>
+        </div>
+        <p class="contrib-message">"branch: support configuring --sort via .gitconfig"</p>
+        <p class="contrib-desc">
+          Implemented <code><a href="https://git-scm.com/docs/git-branch#Documentation/git-branch.txt---sortltkeygt" target="_blank" rel="noopener">git branch --sort=-committerdate</a></code> and
+          added the <code>branch.sort</code> configuration variable to <code>.gitconfig</code>.
+          Merged by Junio C Hamano (Git's maintainer) and shipped in <strong>Git 2.19.0</strong>.
+          This feature is widely used by Git developers — mentioned by <a href="https://twitter.com/schacon" target="_blank" rel="noopener">Scott Chacon</a> (GitHub co-founder, author of <em>Pro Git</em>)
+          at <a href="https://archive.fosdem.org/2024/schedule/event/fosdem-2024-3611-so-you-think-you-know-git/" target="_blank" rel="noopener">FOSDEM 2024</a>, and documented in how <a href="https://blog.gitbutler.com/how-git-core-devs-configure-git" target="_blank" rel="noopener">Git core developers configure Git</a>.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">C</span>
+          <span class="contrib-diff">+64 −3</span>
+        </div>
+      </article>
+
+      <!-- gruntwork-io/terragrunt — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/gruntwork-io/terragrunt/pull/2130"
+             target="_blank" rel="noopener" class="contrib-repo">gruntwork-io/terragrunt</a>
+          <span class="contrib-stars">⭐ 9.8k</span>
+          <span class="contrib-badge contrib-badge--feature">feature</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2022</span>
+        </div>
+        <p class="contrib-message">"Add a 'output-module-groups' command"</p>
+        <p class="contrib-desc">
+          Added the <code>output-module-groups</code> command (now <code>terragrunt graph-dependencies --json</code>)
+          to output the execution groups of the current stack as JSON, enabling
+          downstream tooling to parallelize CI and reason about dependency ordering.
+          A substantive Go feature addition to one of the main IaC orchestration tools.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Go</span>
+        </div>
+      </article>
+
+      <!-- composer/composer — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/composer/composer/pull/2397"
+             target="_blank" rel="noopener" class="contrib-repo">composer/composer</a>
+          <span class="contrib-stars">⭐ 29k</span>
+          <span class="contrib-badge contrib-badge--fix">fix</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2013</span>
+        </div>
+        <p class="contrib-message">"Retry on some 5xx errors"</p>
+        <p class="contrib-desc">
+          Extended the HTTP retry logic to cover 502, 503, and 504 — not just 500 —
+          after hitting intermittent GitHub-hosted package download failures. Composer
+          is the de facto PHP dependency manager; a small fix that quietly helped
+          every developer who hit the same transient errors.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">PHP</span>
+        </div>
+      </article>
+
+      <!-- helm/helm — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/helm/helm/pull/10581"
+             target="_blank" rel="noopener" class="contrib-repo">helm/helm</a>
+          <span class="contrib-stars">⭐ 30k</span>
+          <span class="contrib-badge contrib-badge--fix">fix</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2022</span>
+        </div>
+        <p class="contrib-message">"Set go version to 1.17 to match CI"</p>
+        <p class="contrib-desc">
+          Updated <code>go.mod</code> to Go 1.17 to fix broken <code>go install</code>
+          in CI, merged into <strong>Helm 3.9.0</strong>. A second PR (<a href="https://github.com/helm/helm/pull/10572" target="_blank" rel="noopener">#10572</a>)
+          proposed using <code>chartutil.ValidateReleaseName</code> in the linter for
+          stricter chart name validation (eventually closed as stale).
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Go</span>
+        </div>
+      </article>
+
+      <!-- skaffold — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/GoogleContainerTools/skaffold/pull/6914"
+             target="_blank" rel="noopener" class="contrib-repo">GoogleContainerTools/skaffold</a>
+          <span class="contrib-stars">⭐ 14.5k</span>
+          <span class="contrib-badge contrib-badge--fix">fix</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2021</span>
+        </div>
+        <p class="contrib-message">"Allow apply of manifests without file name restrictions"</p>
+        <p class="contrib-desc">
+          Removed the <code>.yaml</code>/<code>.json</code> extension requirement on
+          <code>skaffold apply</code>, allowing any filename as a Kubernetes manifest.
+          A quality-of-life fix in Google's Kubernetes development tool; 15 review
+          comments before merge.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Go</span>
+        </div>
+      </article>
+
+      <!-- tektoncd/pipeline — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/tektoncd/pipeline/pull/4411"
+             target="_blank" rel="noopener" class="contrib-repo">tektoncd/pipeline</a>
+          <span class="contrib-stars">⭐ 9k</span>
+          <span class="contrib-badge contrib-badge--fix">security</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2021</span>
+        </div>
+        <p class="contrib-message">"Don't install golangci-lint with curl | bash, use go install"</p>
+        <p class="contrib-desc">
+          Replaced <code>curl | bash</code> golangci-lint installation with
+          <code>go install</code> in Tekton's pipeline CI, with a dedicated
+          <code>tools/go.mod</code> to pin the version. Supply-chain hygiene
+          improvement; 20 review comments, received <code>approved</code> +
+          <code>lgtm</code> labels.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Go</span>
+        </div>
+      </article>
+
+      <!-- snyk/driftctl — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/snyk/driftctl/pull/1235"
+             target="_blank" rel="noopener" class="contrib-repo">snyk/driftctl</a>
+          <span class="contrib-stars">⭐ 2.7k</span>
+          <span class="contrib-badge contrib-badge--fix">fix</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2021</span>
+        </div>
+        <p class="contrib-message">"Display out of sync drifts only in deep mode"</p>
+        <p class="contrib-desc">
+          Modified the default drift detection in driftctl to exclude out-of-sync
+          resources when not in <code>--deep</code> mode, significantly improving signal-to-noise ratio
+          in drift reports.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Go</span>
+        </div>
+      </article>
+
+      <!-- Percona/percona-helm-charts — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/percona/percona-helm-charts/pull/93"
+             target="_blank" rel="noopener" class="contrib-repo">percona/percona-helm-charts</a>
+          <span class="contrib-stars">⭐ 0.5k</span>
+          <span class="contrib-badge contrib-badge--feature">feature</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2021</span>
+        </div>
+        <p class="contrib-message">"Add ServiceMonitor for Prometheus monitoring"</p>
+        <p class="contrib-desc">
+          Extended Percona's Helm charts to support <code>ServiceMonitor</code> resources,
+          enabling seamless Prometheus integration without manual scrape config editing.
+          Improves observability for users running Percona databases in Kubernetes with
+          Prometheus and Grafana stacks.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Helm · YAML</span>
+        </div>
+      </article>
+
+      <!-- iNaturalist/iNaturalist — PR -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://github.com/inaturalist/inaturalist/pull/4437"
+             target="_blank" rel="noopener" class="contrib-repo">inaturalist/iNaturalist</a>
+          <span class="contrib-stars">⭐ 0.3k</span>
+          <span class="contrib-badge contrib-badge--community">community</span>
+          <span class="contrib-badge contrib-badge--pr">PR</span>
+          <span class="contrib-year">2021</span>
+        </div>
+        <p class="contrib-message">"Show guide photos in species detail"</p>
+        <p class="contrib-desc">
+          Enhanced the iNaturalist species observation page to display field guide
+          photos, improving field identification experience for 1M+ monthly users.
+          Shipped in production for all iNaturalist users.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Ruby · Rails</span>
+        </div>
+      </article>
+
+      <!-- smaftoul/workload-identity-federation — Gist -->
+      <article class="contrib-card contrib-card--top">
+        <div class="contrib-card-header">
+          <a href="https://gist.github.com/smaftoul/079559985b999c57205e6760fa5edb6b"
+             target="_blank" rel="noopener" class="contrib-repo">smaftoul/workload-identity-federation</a>
+          <span class="contrib-badge contrib-badge--project">project</span>
+          <span class="contrib-year">2023</span>
+        </div>
+        <p class="contrib-message">"Binding cloud IAM to process context via dynamic JWT claims"</p>
+        <p class="contrib-desc">
+          A proof-of-concept demonstrating how to bind cloud IAM permissions to 
+          dynamic process context without static credentials.
+        </p>
+        <p class="contrib-desc">
+          The system: a FUSE filesystem acts as a local identity provider, intercepting 
+          reads from processes and returning signed JWTs with process-aware claims 
+          (UID, GID, PID, process name, CWD, environment). Any unprivileged process 
+          on the machine can read from this filesystem to get a JWT, then pass it to 
+          Google APIs as a credential-source-file. Google decodes the JWT, reads the 
+          embedded claims, and enforces policy rules — e.g., "allow Cloud Logging 
+          access only from UID 1000–1010", or "allow secret retrieval only when 
+          process is 'myapp' not 'debug'", or "allow writes only from machines 
+          tagged 'production'".
+        </p>
+        <p class="contrib-desc">
+          Written in Python, this illustrates how workload identity federation can 
+          replace fixed service account keys by grounding credentials in the actual 
+          process context executing the code. For fun, the JWT also embeds the current 
+          Paris weather — demonstrating the flexibility of claims-based policy by showing 
+          you <em>could</em> gate access by weather condition (not recommended for production).
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Python · Terraform · FUSE · OIDC</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ── Note ───────────────────────────────────────────────── -->
+  <p class="contrib-note">
+    <span class="contrib-comment">#</span>
+    Most professional work lives in private repositories at past and current employers.
+    The commits listed here are from public repositories only.
+  </p>
+</PageLayout>
+
+<style>
+  .contrib-intro {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 42rem;
+  }
+
+  .contrib-section { margin-bottom: 2.5rem; }
+
+  .contrib-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 1rem;
+  }
+
+  /* ── Cards ── */
+  .contrib-card {
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .contrib-card:first-child { border-top: 1px solid var(--border); }
+
+  .contrib-card--top {
+    border-left: 2px solid var(--accent);
+    padding-left: 0.9rem;
+  }
+
+  /* ── Header row ── */
+  .contrib-card-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .contrib-repo {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .contrib-repo:hover { color: var(--accent); }
+
+  .contrib-stars {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .contrib-year {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  /* ── Badges ── */
+  .contrib-badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 3px;
+    border: 1px solid;
+    letter-spacing: 0.03em;
+  }
+  .contrib-badge--feature  { color: var(--accent);      border-color: var(--accent);      }
+  .contrib-badge--fix      { color: #f59e0b;             border-color: #f59e0b;             }
+  .contrib-badge--chore    { color: var(--text-muted);   border-color: var(--border);       }
+  .contrib-badge--docs     { color: #a78bfa;             border-color: #a78bfa;             }
+  .contrib-badge--community{ color: var(--accent-alt);   border-color: var(--accent-alt);   }
+  .contrib-badge--project  { color: var(--accent);       border-color: var(--accent);       }
+  /* PR vs commit source indicators — subtle, filled background */
+  .contrib-badge--pr     { color: var(--bg); background: #7c3aed; border-color: #7c3aed;  }
+  .contrib-badge--commit { color: var(--bg); background: var(--text-muted); border-color: var(--text-muted); opacity: 0.7; }
+
+  /* ── Commit message ── */
+  .contrib-message {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+
+  /* ── Description ── */
+  .contrib-desc {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.65;
+    max-width: 44rem;
+    margin-bottom: 0.4rem;
+  }
+  .contrib-desc code {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.3em;
+    color: var(--accent);
+  }
+
+  /* ── Meta row ── */
+  .contrib-meta {
+    display: flex;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+  .contrib-diff { opacity: 0.7; }
+
+  /* ── Aside text (lighter, for tangential notes) ── */
+  .contrib-aside {
+    color: var(--text-muted) !important;
+    font-size: 0.82rem !important;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  /* ── Footer note ── */
+  .contrib-note {
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    opacity: 0.65;
+  }
+  .contrib-comment {
+    color: var(--accent);
+    margin-right: 0.4rem;
+    opacity: 0.6;
+  }
+</style>

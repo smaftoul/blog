@@ -4,7 +4,7 @@ export const navEmojis: Record<string, string> = {
   now: "⏱️",
   uses: "🧰",
   projects: "🛠️",
-  contributions: "🌍",
+  contributions: "🌲",
   links: "🔗",
   inaturalist: "🦉",
   contact: "✉️",
