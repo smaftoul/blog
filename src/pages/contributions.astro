@@ -259,7 +259,47 @@ const { Content } = contribPage ? await render(contribPage) : { Content: null };
         </div>
       </article>
 
-    </div>
+      <!-- smaftoul/tcpconnlat — Gist -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://gist.github.com/smaftoul/8dc62b01e4f03edc1141a47a1fcf1b24"
+             target="_blank" rel="noopener" class="contrib-repo">smaftoul/tcpconnlat</a>
+          <span class="contrib-badge contrib-badge--tool">tool</span>
+          <span class="contrib-year">2024</span>
+        </div>
+        <p class="contrib-message">"Prometheus exporter for TCP SYN-ACK latency"</p>
+        <p class="contrib-desc">
+          An extension of the BCC project's tcpconnlat eBPF tool that adds Prometheus 
+          metrics export. Measures kernel-level TCP handshake latency (SYN-ACK timing) 
+          across all processes and makes it scrapeable by Prometheus for production 
+          network monitoring and observability.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Python · eBPF · Prometheus</span>
+        </div>
+      </article>
+
+      <!-- smaftoul/vault-kmip-test — Gist -->
+      <article class="contrib-card">
+        <div class="contrib-card-header">
+          <a href="https://gist.github.com/smaftoul/0d11e58cb1b9be259309a3d151b28de6"
+             target="_blank" rel="noopener" class="contrib-repo">smaftoul/vault-kmip-test</a>
+          <span class="contrib-badge contrib-badge--test">test</span>
+          <span class="contrib-year">2024</span>
+        </div>
+        <p class="contrib-message">"KMIP integration test with HashiCorp Vault"</p>
+        <p class="contrib-desc">
+          A proof-of-concept demonstrating KMIP (Key Management Interoperability Protocol) 
+          integration with HashiCorp Vault. The test generates an RSA key and certificate 
+          signing request to validate Vault's KMIP server functionality for key lifecycle 
+          management and certificate operations.
+        </p>
+        <div class="contrib-meta">
+          <span class="contrib-lang">Go · KMIP · Vault</span>
+        </div>
+      </article>
+
+   </div>
   </section>
 
   <!-- ── Note ───────────────────────────────────────────────── -->
