@@ -1,6 +1,7 @@
 ---
 import config from "../config";
 import { ClientRouter } from "astro:transitions";
+import { navEmojis, socialEmojis } from "../lib/emojis";
 
 export interface Props {
   title?: string;
@@ -18,24 +19,6 @@ const {
 
 const pageTitle = title ? `${title} — ${config.title}` : config.title;
 const currentPath = Astro.url.pathname;
-const navEmojis: Record<string, string> = {
-  blog: "✍️",
-  about: "👤",
-  now: "⏱️",
-  uses: "🧰",
-  projects: "🛠️",
-  contributions: "🌍",
-  links: "🔗",
-  inaturalist: "🦉",
-  contact: "✉️",
-};
-
-const socialEmojis: Record<string, string> = {
-  github: "🐙",
-  mastodon: "🐘",
-  linkedin: "💼",
-  spotify: "🎵",
-};
 ---
 
 <!doctype html>

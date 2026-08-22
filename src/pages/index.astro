@@ -1,7 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
 import config from "../config";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
+import { socialEmojis } from "../lib/emojis";
 
 const allPosts = await getCollection("blog");
 const featuredPosts = allPosts
@@ -14,16 +15,14 @@ const recentPosts = allPosts
   .sort((a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime())
   .slice(0, 3);
 
+// Load home page content
+const homePages = await getCollection("pages");
+const homePage = homePages.find((p) => p.id === "home");
+const { Content } = homePage ? await render(homePage) : { Content: null };
+
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" });
 }
-
-const socialEmojis: Record<string, string> = {
-  github: "🐙",
-  mastodon: "🐘",
-  linkedin: "💼",
-  spotify: "🎵",
-};
 
 const personSchema = {
   "@context": "https://schema.org",
@@ -74,20 +73,13 @@ const websiteSchema = {
       />
       <p class="brume-hero-etymology">
         <span class="brume-comment">#</span>{" "}
-        <em>/bʁym/</em> &mdash; French for <em>mist</em> or <em>fog</em>.
-        Cloud infrastructure, ambient music, foggy mornings.
+        <em>{homePage?.data.etymology}</em>
       </p>
-      <p class="brume-hero-bio">{config.authorBio}</p>
-      <ul class="brume-hero-socials">
-        {config.socials.map((s) => (
-          <li>
-            <a href={s.url} rel="me noopener noreferrer" target="_blank">
-              <span class="brume-social-emoji" aria-hidden="true">{socialEmojis[s.icon] ?? "•"}</span>
-              {s.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+      {Content && (
+        <article class="brume-hero-content">
+          <Content />
+        </article>
+      )}
     </section>
 
     {featuredPosts.length > 0 && (
@@ -176,30 +168,13 @@ const websiteSchema = {
   :global(html:not(.dark)) .brume-hero-visual-dark { display: none; }
   :global(html:not(.dark)) .brume-hero-visual-light { display: block; }
 
-  .brume-hero-bio {
+  .brume-hero-content {
     font-size: 0.95rem;
     color: var(--text-muted);
     line-height: 1.6;
     margin-bottom: 1rem;
     max-width: 38rem;
   }
-
-  .brume-hero-socials {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-    list-style: none;
-  }
-  .brume-hero-socials a {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-  .brume-social-emoji { font-size: 0.78rem; opacity: 0.8; }
-  .brume-hero-socials a:hover { color: var(--accent); }
 
   .brume-section { margin-bottom: 2.5rem; }
 
