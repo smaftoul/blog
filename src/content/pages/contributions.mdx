@@ -1,0 +1,209 @@
+---
+title: Contributions
+description: Selected public contributions across Git, Helm, Tekton, Terraform, and observability tooling.
+---
+
+import ContributionCard from "../../components/ContributionCard.astro";
+
+I do most of my work in private repositories, so this page is intentionally a small sample rather than a full résumé.
+It highlights the public contributions that are easy to point to, especially the ones that touched systems I actually use.
+
+## Open source
+
+<ContributionCard
+  href="https://github.com/git/git/commit/560ae1c164ad040a389ccc47834dce8c15447294"
+  repo="git/git"
+  stars="⭐ 62k"
+  badge1Label="feature"
+  badge1Variant="feature"
+  badge2Label="commit"
+  badge2Variant="commit"
+  year="2018"
+  lang="C"
+  diff="+64 −3"
+  top
+  message='"branch: support configuring --sort via .gitconfig"'
+>
+Implemented <a href="https://git-scm.com/docs/git-branch#Documentation/git-branch.txt---sortltkeygt" target="_blank" rel="noopener">git branch --sort=-committerdate</a> and added the <code>branch.sort</code> configuration variable to <code>.gitconfig</code>.
+Merged by Junio C Hamano (Git's maintainer) and shipped in <strong>Git 2.19.0</strong>.
+This feature is widely used by Git developers — mentioned by <a href="https://twitter.com/schacon" target="_blank" rel="noopener">Scott Chacon</a> (GitHub co-founder, author of <em>Pro Git</em>) at <a href="https://archive.fosdem.org/2024/schedule/event/fosdem-2024-3611-so-you-think-you-know-git/" target="_blank" rel="noopener">FOSDEM 2024</a>, and documented in <a href="https://blog.gitbutler.com/how-git-core-devs-configure-git" target="_blank" rel="noopener">How Core Git Developers Configure Git</a>.
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/gruntwork-io/terragrunt/pull/2130"
+  repo="gruntwork-io/terragrunt"
+  stars="⭐ 9.8k"
+  badge1Label="feature"
+  badge1Variant="feature"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2022"
+  lang="Go"
+  message={"\"Add a 'output-module-groups' command\""}
+>
+Added the <code>output-module-groups</code> command (now <code>terragrunt graph-dependencies --json</code>) to output the execution groups of the current stack as JSON, enabling downstream tooling to parallelize CI and reason about dependency ordering.
+A substantive Go feature addition to one of the main IaC orchestration tools.
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/composer/composer/pull/2397"
+  repo="composer/composer"
+  stars="⭐ 29k"
+  badge1Label="fix"
+  badge1Variant="fix"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2013"
+  lang="PHP"
+  message='"Retry on some 5xx errors"'
+>
+Extended the HTTP retry logic to cover 502, 503, and 504 — not just 500 — after hitting intermittent GitHub-hosted package download failures.
+Composer is the de facto PHP dependency manager; a small fix that quietly helped every developer who hit the same transient errors.
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/helm/helm/pull/10581"
+  repo="helm/helm"
+  stars="⭐ 30k"
+  badge1Label="fix"
+  badge1Variant="fix"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2022"
+  lang="Go"
+  message='"Set go version to 1.17 to match CI"'
+>
+Updated <code>go.mod</code> to Go 1.17 to fix broken <code>go install</code> in CI, merged into <strong>Helm 3.9.0</strong>.
+A second PR (<a href="https://github.com/helm/helm/pull/10572" target="_blank" rel="noopener">#10572</a>) proposed using <code>chartutil.ValidateReleaseName</code> in the linter for stricter chart name validation (eventually closed as stale).
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/GoogleContainerTools/skaffold/pull/6914"
+  repo="GoogleContainerTools/skaffold"
+  stars="⭐ 14.5k"
+  badge1Label="fix"
+  badge1Variant="fix"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2021"
+  lang="Go"
+  message='"Allow apply of manifests without file name restrictions"'
+>
+Removed the <code>.yaml</code>/<code>.json</code> extension requirement on <code>skaffold apply</code>, allowing any filename as a Kubernetes manifest.
+A quality-of-life fix in Google's Kubernetes development tool; 15 review comments before merge.
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/tektoncd/pipeline/pull/4411"
+  repo="tektoncd/pipeline"
+  stars="⭐ 9k"
+  badge1Label="security"
+  badge1Variant="security"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2021"
+  lang="Go"
+  message={"\"Don't install golangci-lint with curl | bash, use go install\""}
+>
+Replaced <code>curl | bash</code> golangci-lint installation with <code>go install</code> in Tekton's pipeline CI, with a dedicated <code>tools/go.mod</code> to pin the version.
+Supply-chain hygiene improvement; 20 review comments, received <code>approved</code> + <code>lgtm</code> labels.
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/snyk/driftctl/pull/1235"
+  repo="snyk/driftctl"
+  stars="⭐ 2.7k"
+  badge1Label="fix"
+  badge1Variant="fix"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2021"
+  lang="Go"
+  message='"Display out of sync drifts only in deep mode"'
+>
+Modified the default drift detection in driftctl to exclude out-of-sync resources when not in <code>--deep</code> mode, significantly improving signal-to-noise ratio in drift reports.
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/percona/percona-helm-charts/pull/93"
+  repo="percona/percona-helm-charts"
+  stars="⭐ 0.5k"
+  badge1Label="feature"
+  badge1Variant="feature"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2021"
+  lang="Helm · YAML"
+  message={"\"Fix backup.serviceAccountName not being interpolated\""}
+>
+Fixed the backup chart so <code>serviceAccountName</code> was interpolated correctly instead of being left as a literal value.
+That made the backup configuration actually honor the configured service account.
+</ContributionCard>
+
+<ContributionCard
+  href="https://github.com/inaturalist/inaturalist/pull/4389"
+  repo="inaturalist/iNaturalist"
+  stars="⭐ 0.3k"
+  badge1Label="community"
+  badge1Variant="community"
+  badge2Label="PR"
+  badge2Variant="pr"
+  year="2025"
+  lang="Ruby · Rails"
+  message={"\"fix: don't ask consent for every google oauth2 signins (only at signup)\""}
+>
+Stopped the app from prompting for Google OAuth2 consent on every sign-in; users only had to grant consent at signup.
+That made the login flow less noisy for returning users.
+</ContributionCard>
+
+<ContributionCard
+  href="https://gist.github.com/smaftoul/079559985b999c57205e6760fa5edb6b"
+  repo="smaftoul/workload-identity-federation"
+  badge1Label="project"
+  badge1Variant="project"
+  year="2024"
+  lang="Python · Terraform · FUSE · OIDC"
+  top
+  message='"JWTFS: process-aware JWT identity through a virtual file"'
+>
+This proof of concept exposes a virtual <code>/jwt</code> file through a FUSE filesystem. When a process reads the file, the filesystem identifies the calling process, collects basic metadata such as its PID, executable, command line, and user information, then embeds those details into a JWT signed with an RSA private key.
+
+The token can be consumed by local applications or sent to another service as a short-lived workload identity. This makes the project useful for experimenting with process-aware authentication, file-based credential delivery, and the relationship between Linux process metadata and signed identity claims.
+
+It is primarily intended as learning and teaching material, rather than a production-ready identity system.
+</ContributionCard>
+
+<ContributionCard
+  href="https://gist.github.com/smaftoul/8dc62b01e4f03edc1141a47a1fcf1b24"
+  repo="smaftoul/tcpconnlat"
+  badge1Label="tool"
+  badge1Variant="tool"
+  year="2018"
+  lang="Python · eBPF · Prometheus"
+  message='"Prometheus exporter for TCP SYN-ACK latency"'
+>
+An extension of the BCC project's tcpconnlat eBPF tool that adds Prometheus metrics export.
+Measures kernel-level TCP handshake latency (SYN-ACK timing) across all processes and makes it scrapeable by Prometheus for production network monitoring and observability.
+</ContributionCard>
+
+<ContributionCard
+  href="https://gist.github.com/smaftoul/0d11e58cb1b9be259309a3d151b28de6"
+  repo="smaftoul/vault-kmip-test"
+  badge1Label="test"
+  badge1Variant="test"
+  year="2024"
+  lang="Go · KMIP · Vault"
+  message='"KMIP integration test with HashiCorp Vault"'
+>
+A proof-of-concept demonstrating KMIP (Key Management Interoperability Protocol) integration with HashiCorp Vault.
+The test generates an RSA key and certificate signing request to validate Vault's KMIP server functionality for key lifecycle management and certificate operations.
+</ContributionCard>
+
+## Missing but worth mentioning
+
+- I have more public pull requests than the page currently shows.
+- Some of the most useful work is in private repos, so it cannot be listed here.
+- A few contributions are more operational than code changes and are harder to summarize cleanly.
+
+Most professional work lives in private repositories at past and current employers.
+The commits listed here are from public repositories only.
