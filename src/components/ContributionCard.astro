@@ -1,0 +1,164 @@
+---
+export interface Props {
+  href: string;
+  repo: string;
+  stars?: string;
+  year: string;
+  lang: string;
+  diff?: string;
+  message?: string;
+  badge1Label?: string;
+  badge1Variant?: string;
+  badge2Label?: string;
+  badge2Variant?: string;
+  top?: boolean;
+}
+
+const {
+  href,
+  repo,
+  stars,
+  year,
+  lang,
+  diff,
+  message,
+  badge1Label,
+  badge1Variant,
+  badge2Label,
+  badge2Variant,
+  top = false,
+} = Astro.props;
+
+const badges = [
+  badge1Label
+    ? { label: badge1Label, variant: badge1Variant ?? badge1Label }
+    : null,
+  badge2Label
+    ? { label: badge2Label, variant: badge2Variant ?? badge2Label }
+    : null,
+].filter(Boolean) as Array<{ label: string; variant: string }>;
+---
+
+<article class:list={["contrib-card", { "contrib-card--top": top }]}>
+  <div class="contrib-card-header">
+    <a href={href} target="_blank" rel="noopener" class="contrib-repo">{repo}</a>
+    {stars && <span class="contrib-stars">{stars}</span>}
+    {badges.map((badge) => (
+      <span class:list={["contrib-badge", `contrib-badge--${badge.variant}`]}>{badge.label}</span>
+    ))}
+    <span class="contrib-year">{year}</span>
+  </div>
+
+  {message && <p class="contrib-message">{message}</p>}
+
+  <div class="contrib-card-body">
+    <slot />
+  </div>
+
+  <div class="contrib-meta">
+    <span class="contrib-lang">{lang}</span>
+    {diff && <span class="contrib-diff">{diff}</span>}
+  </div>
+</article>
+
+<style>
+  .contrib-card {
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .contrib-card:first-of-type { border-top: 1px solid var(--border); }
+
+  .contrib-card--top {
+    border-left: 2px solid var(--accent);
+    padding-left: 0.9rem;
+  }
+
+  .contrib-card-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .contrib-repo {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .contrib-repo:hover { color: var(--accent); }
+
+  .contrib-stars {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .contrib-year {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .contrib-badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 3px;
+    border: 1px solid;
+    letter-spacing: 0.03em;
+  }
+  .contrib-badge--feature { color: var(--accent); border-color: var(--accent); }
+  .contrib-badge--fix { color: #f59e0b; border-color: #f59e0b; }
+  .contrib-badge--chore { color: var(--text-muted); border-color: var(--border); }
+  .contrib-badge--docs { color: #a78bfa; border-color: #a78bfa; }
+  .contrib-badge--community { color: var(--accent-alt); border-color: var(--accent-alt); }
+  .contrib-badge--project { color: var(--accent); border-color: var(--accent); }
+  .contrib-badge--tool { color: #38bdf8; border-color: #38bdf8; }
+  .contrib-badge--test { color: #22c55e; border-color: #22c55e; }
+  .contrib-badge--security { color: #ef4444; border-color: #ef4444; }
+  .contrib-badge--pr { color: var(--bg); background: #7c3aed; border-color: #7c3aed; }
+  .contrib-badge--commit { color: var(--bg); background: var(--text-muted); border-color: var(--text-muted); opacity: 0.7; }
+
+  .contrib-message {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+
+  .contrib-card-body {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.65;
+    max-width: 44rem;
+    margin-bottom: 0.4rem;
+  }
+  .contrib-card-body :global(p) {
+    margin-bottom: 0.6rem;
+  }
+  .contrib-card-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .contrib-card-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.3em;
+    color: var(--accent);
+  }
+
+  .contrib-meta {
+    display: flex;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+  .contrib-diff { opacity: 0.7; }
+</style>

@@ -1,0 +1,22 @@
+---
+import config from "../../config";
+import { socialEmojis } from "../../lib/emojis";
+---
+
+<footer class="brume-footer" data-pagefind-ignore>
+  <div class="brume-footer-inner">
+    <span class="brume-footer-copy">
+      &copy; {new Date().getFullYear()} {config.author}
+    </span>
+    <ul class="brume-footer-socials">
+      {config.socials.map((s) => (
+        <li>
+          <a href={s.url} rel="me noopener noreferrer" target="_blank" aria-label={s.label}>
+            <span class="brume-social-emoji" aria-hidden="true">{socialEmojis[s.icon] ?? "•"}</span>
+            {s.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</footer>

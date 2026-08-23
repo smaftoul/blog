@@ -1,0 +1,45 @@
+---
+import config from "../../config";
+import { navEmojis } from "../../lib/emojis";
+
+export interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+---
+
+<header class="brume-header" data-pagefind-ignore>
+  <div class="brume-header-inner">
+    <a href="/" class="brume-logo" aria-label="Home">
+      <span class="brume-logo-mark" aria-hidden="true">🌫️</span>
+      <span class="brume-logo-bracket">[</span>{config.title}<span class="brume-logo-bracket">]</span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul class="brume-nav">
+        {config.nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={["brume-nav-link", { active: currentPath.startsWith(item.href) }]}
+              aria-current={currentPath.startsWith(item.href) ? "page" : undefined}
+            >
+              <span class="brume-nav-emoji" aria-hidden="true">{navEmojis[item.label] ?? "•"}</span>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <button id="theme-toggle" class="brume-theme-toggle" aria-label="Toggle dark/light mode" title="Toggle theme">
+      <span class="theme-icon-dark">◐</span>
+      <span class="theme-icon-light">◑</span>
+    </button>
+
+    <button id="search-toggle" class="brume-search-btn" aria-label="Search" title="Search (/)">
+      🔍
+    </button>
+  </div>
+</header>

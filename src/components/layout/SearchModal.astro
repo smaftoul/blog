@@ -1,0 +1,139 @@
+<div id="search-modal" class="brume-search-modal" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="brume-search-backdrop"></div>
+  <div class="brume-search-box">
+    <div class="brume-search-input-row">
+      <span class="brume-search-slash">🔎</span>
+      <input
+        id="search-input"
+        type="search"
+        class="brume-search-input"
+        placeholder="search posts, pages…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="search-close" class="brume-search-close" aria-label="Close search">esc</button>
+    </div>
+    <div id="search-results" class="brume-search-results"></div>
+  </div>
+</div>
+
+<script is:inline>
+  if (!window.__brumeSearchBound) {
+    window.__brumeSearchBound = true;
+    var _pf = null;
+    var _searchDebounceTimer;
+
+    async function loadPagefind() {
+      if (_pf) return _pf;
+      try {
+        _pf = await import("/pagefind/pagefind.js");
+        await _pf.init();
+      } catch {
+        _pf = null;
+      }
+      return _pf;
+    }
+
+    function getSearchEls() {
+      var modal = document.getElementById("search-modal");
+      if (!modal) return null;
+      return {
+        modal: modal,
+        input: document.getElementById("search-input"),
+        results: document.getElementById("search-results"),
+      };
+    }
+
+    function closeSearch() {
+      var els = getSearchEls();
+      if (!els || !els.input || !els.results) return;
+      els.modal.hidden = true;
+      els.input.value = "";
+      els.results.innerHTML = "";
+    }
+
+    function openSearch() {
+      var els = getSearchEls();
+      if (!els || !els.input) return;
+      els.modal.hidden = false;
+      els.input.focus();
+      loadPagefind();
+    }
+
+    async function runSearch(query) {
+      var els = getSearchEls();
+      if (!els || !els.results) return;
+      els.results.innerHTML = "";
+      if (!query) return;
+
+      var pf = await loadPagefind();
+      if (!pf) {
+        els.results.innerHTML = '<p class="brume-search-msg">Search not available in dev mode — run <code>bun run build</code> first.</p>';
+        return;
+      }
+
+      var search = await pf.search(query);
+      if (search.results.length === 0) {
+        els.results.innerHTML = '<p class="brume-search-msg">No results.</p>';
+        return;
+      }
+
+      var items = await Promise.all(search.results.slice(0, 8).map(function (r) { return r.data(); }));
+      els.results.innerHTML = items
+        .map(function (item) {
+          var title = item.title || item.url;
+          if (title.startsWith("~/")) {
+            title = title.substring(2);
+          }
+          title = title.split("\n")[0].substring(0, 60);
+          var excerpt = (item.excerpt || "").substring(0, 150);
+          if (item.excerpt && item.excerpt.length > 150) {
+            excerpt += "…";
+          }
+          return '<a href="' + item.url + '" class="brume-search-result">'
+            + '<span class="brume-search-result-title">' + title + "</span>"
+            + '<span class="brume-search-result-excerpt">' + excerpt + "</span>"
+            + "</a>";
+        })
+        .join("");
+    }
+
+    document.addEventListener("click", function (event) {
+      var target = event.target;
+      if (!(target instanceof Element)) return;
+
+      if (target.closest("#search-toggle")) {
+        openSearch();
+        return;
+      }
+      if (target.closest("#search-close") || target.classList.contains("brume-search-backdrop")) {
+        closeSearch();
+      }
+      if (target.closest(".brume-search-result")) {
+        closeSearch();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      var target = e.target;
+      var targetTag = target && target.tagName ? target.tagName : "";
+      if (e.key === "/" && targetTag !== "INPUT" && targetTag !== "TEXTAREA") {
+        e.preventDefault();
+        openSearch();
+      }
+      if (e.key === "Escape") {
+        var els = getSearchEls();
+        if (els && !els.modal.hidden) closeSearch();
+      }
+    });
+
+    document.addEventListener("input", function (event) {
+      var target = event.target;
+      if (!(target instanceof HTMLInputElement) || target.id !== "search-input") return;
+      clearTimeout(_searchDebounceTimer);
+      _searchDebounceTimer = setTimeout(function () {
+        runSearch(target.value.trim());
+      }, 150);
+    });
+  }
+</script>

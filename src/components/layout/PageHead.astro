@@ -1,0 +1,55 @@
+---
+import config from "../../config";
+import { ClientRouter } from "astro:transitions";
+import ThemeBootstrap from "./ThemeBootstrap.astro";
+import MermaidLoader from "./MermaidLoader.astro";
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalURL: string;
+  ogType?: "website" | "article";
+}
+
+const { title, description, canonicalURL, ogType = "website" } = Astro.props;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={config.title} />
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" href="/favicon.ico" />
+
+<link rel="me" href="https://github.com/smaftoul" />
+<link rel="me" href="https://hachyderm.io/@smaftoul" />
+<link rel="me" href="https://piaille.fr/@smaftoul" />
+
+<link rel="webmention" href="https://webmention.io/maftoul.eu.org/webmention" />
+<link rel="pingback" href="https://webmention.io/maftoul.eu.org/xmlrpc" />
+
+<ThemeBootstrap />
+
+{config.features.goatCounter && (
+  <script
+    is:inline
+    data-goatcounter="https://maftoul.goatcounter.com/count"
+    async
+    src="//gc.zgo.at/count.js"
+  ></script>
+)}
+
+<MermaidLoader />
+
+<slot name="head" />
+<ClientRouter />
