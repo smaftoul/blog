@@ -8,4 +8,4 @@ I'm Samuel Maftoul, an SRE and Platform Engineer working on infrastructure, auto
 
 I write about platforms, Linux, cloud, and the occasional side project.
 
-[Read more about me](/about)
+[Read more about me](/about) · [Contact](/contact)

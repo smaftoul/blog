@@ -20,7 +20,4 @@ Outside of work, I’m into a bunch of things:
 
 ## Find me
 
-- [GitHub](https://github.com/smaftoul)
-- [Mastodon (hachyderm.io)](https://hachyderm.io/@smaftoul)
-- [Mastodon (piaille.fr)](https://piaille.fr/@smaftoul)
-- [LinkedIn](https://www.linkedin.com/in/maftoul/)
+If you want to reach me, see the [contact page](/contact).
