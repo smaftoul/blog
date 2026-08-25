@@ -1,9 +1,11 @@
 ---
 title: "brume"
-description: "SRE and Platform Engineer working on infrastructure, automation, and systems at scale"
+description: "Personal site of Samuel Maftoul — SRE and Platform Engineer"
 etymology: "/bʁym/ — French for mist or fog. Cloud infrastructure, and a nebula of other subjects."
 ---
 
-I'm an SRE and Platform Engineer. I work on infrastructure, automation, and the systems that make software run at scale.
+I'm Samuel Maftoul, an SRE and Platform Engineer working on infrastructure, automation, and systems that are reliable and boring in the best way.
 
-My day-to-day involves Kubernetes, Terraform/OpenTofu, NixOS, and whatever else needs to be automated. I care about reliability, reproducibility, and keeping things simple where possible.
+I write about platforms, Linux, cloud, and the occasional side project.
+
+[Read more about me](/about)
